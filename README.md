@@ -45,7 +45,7 @@ field(yard_numbers=True, touchdown_markings=True, fifty_yard=False, fig_size=(12
 fig, ax = visuals.field()
 plt.show()
 ```
-
+![field.png](https://raw.githubusercontent.com/shammeer-s/nfl-tracks/e0d4dcada2bab940d84978964a52b3f5a06ed60b/outputs/field.png "Field")
 ---
 
 ## snap()
@@ -77,6 +77,7 @@ snap(data, gameId, playId, frameId, yard_numbers=True, touchdown_markings=True, 
 fig, ax = visuals.snap(data, gameId=2022091200, playId=64, frameId=10)
 plt.show()
 ```
+![snap.png](https://raw.githubusercontent.com/shammeer-s/nfl-tracks/refs/heads/master/outputs/snap.png "snap")
 ---
 
 ## play_game()
@@ -110,6 +111,7 @@ play_game(data, gameId, playId, kaggle=True, yard_numbers=True, touchdown_markin
 ani = visuals.play_game(data, gameId=2022091200, playId=64)
 ani
 ```
+![play.gif](https://raw.githubusercontent.com/shammeer-s/nfl-tracks/refs/heads/master/outputs/play.gif "play_game")
 ---
 ## 2. Usage Examples
 Plotting a Field
@@ -120,13 +122,13 @@ plt.show()
 
 Visualizing a Single Frame
 ```python
-fig, ax = visuals.snap(data, gameId=2022091200, playId=64, frameId=15, size=20)
+fig, ax = visuals.snap(data, gameId=2022091200, playId=52, frameId=15, size=20)
 plt.show()
 ```
 
 Plotting a Field
 ```python
-ani = visuals.play_game(data, gameId=2022091200, playId=64, save=True, speed=150)
+ani = visuals.play_game(data, gameId=2022091200, playId=24, save=True, speed=150)
 ani
 ```
 ---
