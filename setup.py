@@ -5,10 +5,10 @@ here = pathlib.Path(__file__).parent.resolve()
 long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
-    name='nfl',
-    version='1.0.0',
-    packages=find_packages(where="src"),
-    package_dir={'': 'src'},
+    name='nfl_tracks',
+    version='1.2.0',
+    packages=find_packages(where="nfl_tracks"),
+    package_dir={'': 'nfl_tracks'},
     classifiers=[
         "Programming Language :: Python :: 3",
         "Development Status :: 3 - Alpha",
@@ -21,16 +21,10 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     install_requires=[
-        "pandas~=2.2.2",
-        "setuptools~=75.1.0",
-        "matplotlib~=3.9.2"
+        "pandas",
+        "matplotlib"
     ],
-    extras_require={
-        "dev": [
-            "pytest >= 6.2.5"
-        ]
-    },
-    url='https://github.com/shammeer-s/nfl-viz',
+    url='https://github.com/shammeer-s/nfl-tracks',
     author='Mohammed Shammeer',
     author_email='mohammedshammeer.s@gmail.com',
     description='Python library written on top of matplotlib library for customizable nfl charts'

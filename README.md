@@ -1,133 +1,148 @@
-# NFL Play Visualizer
+# NFL Field Visualization and Animation Library
 
-This Python script provides tools for visualizing NFL play data on a football field. Using `matplotlib`, it creates static snapshots and animated plays of NFL games based on tracking data.
+This library provides utilities to visualize a football field, plot player positions, and animate plays. It is designed to handle data from tracking datasets, such as those used in football analytics.
 
-## Requirements
-
-- Python 3.x
-- pandas
-- matplotlib
-
-To install the dependencies:
+Installing the library:
 
 ```bash
-pip install nfl
+pip install nfl_tracks
 ```
 
-After successfully installing the nfl package, import it in the file using the code below:```python
+After successfully installing the nfl_tracks package, import it in the file using the code below:
 ```python
-# Import nfl
+# Import nfl_tracks
 from nfl import visuals
 ```
-## Overview
-
-### The script contains three main functions:
-
-1. **field**: Sets up the visual representation of a football field.
-2. **snap**: Creates a static snapshot of a specific play frame.
-3. **play_game**: Animates a play, showing player movements across frames.
-
-Individual functions are listed below.
-
+## Table of Contents
+1. Function Overview
+   * field()
+   * snap()
+   * play_game()
+2. Usage Examples 
+3. Error Handling 
+4. Customization Options
 ---
-## _field()_
-This function sets up the football field with customizable features, such as yard numbers, touchdown markings, and a highlighted 50-yard line.
+## 1. Function Overview
+## field()
+Generates a plot of a football field with customizable features.
 
 ```pythonverboseregexp
-visuals.field(yard_numbers, touchdown_markings, fifty_yard, fig_size)
+field(yard_numbers=True, touchdown_markings=True, fifty_yard=False, fig_size=(12, 6.33))
 ```
 
 #### Parameters:
-* **yard_numbers (bool)**: Whether to display yard numbers. Default is True.
-* **touchdown_markings (bool)**: Whether to display touchdown markings. Default is True.
-* **fifty_yard (bool)**: Whether to highlight the fifty-yard line. Default is False.
-* **fig_size (tuple)**: The size of the figure in inches. Default is (12, 6.33).
-
-#### Returns:
-* **fig (matplotlib.figure.Figure)**: The figure object containing the field.
-* **ax (matplotlib.axes._subplots.AxesSubplot)**: The axis object representing the field.
-
-#### Example Usage:
-```python
-fig, ax = visuals.field(yard_numbers=True, touchdown_markings=True)
-```
----
-
-## _snap()_
-Creates a static snapshot of a specific frame in a play. The snapshot includes player positions and can be customized with field features.
-
-```pythonverboseregexp
-snap(data, gameId, playId, frameId, yard_numbers, touchdown_markings, fifty_yard, fig_size)
-```
-
-#### Parameters:
-* **data (pd.DataFrame)**: The DataFrame containing play data.
-* **gameId (int)**: The unique ID of the game. 
-* **playId (int)**: The unique ID of the play. 
-* **frameId (int)**: The frame ID of the play. 
-* **yard_numbers (bool)**: Whether to display yard numbers. Default is True. 
-* **touchdown_markings (bool)**: Whether to display touchdown markings. Default is True. 
-* **fifty_yard (bool)**: Whether to highlight the fifty-yard line. Default is False. 
-* **fig_size (tuple)**: The size of the figure in inches. Default is (12, 6.33).
+* **yard_numbers (bool, default True)**: Whether to display yard numbers on the field.
+* **touchdown_markings (bool, default True)**: Whether to show touchdown zone labels.
+* **fifty_yard (bool, default False)**: Highlights the 50-yard line in gold.
+* **fig_size (tuple, default (12, 6.33))**: Specifies the figure size.
 
 #### Returns:
 * **fig (matplotlib.figure.Figure)**: The figure object.
-* **ax (matplotlib.axes._subplots.AxesSubplot)**: The axis object.
+* **ax (matplotlib.axes.Axes)**: The axes object containing the plot.
 
 #### Example Usage:
 ```python
-fig, ax = visuals.snap(data, gameId=2019090800, playId=75, frameId=10)
+fig, ax = visuals.field()
+plt.show()
 ```
+
 ---
 
-## _play_game()_
-Animates an entire play, showing player positions and movements frame by frame. The animation can be saved as a GIF.
+## snap()
+Plots the positions of players during a specific frame of a play.
+
 ```pythonverboseregexp
-play_game(data, gameId, playId, yard_numbers, touchdown_markings, fifty_yard, fig_size, save, loop, **kwargs)
+snap(data, gameId, playId, frameId, yard_numbers=True, touchdown_markings=True, fifty_yard=False, fig_size=(12, 6.33), **kwargs)
 ```
 
 #### Parameters:
-* **data (pd.DataFrame)**: The DataFrame containing play data.
-* **gameId (int)**: The unique ID of the game. 
-* **playId (int)**: The unique ID of the play. 
-* **yard_numbers (bool)**: Whether to display yard numbers. Default is True. 
-* **touchdown_markings (bool)**: Whether to display touchdown markings. Default is True. 
-* **fifty_yard (bool)**: Whether to highlight the fifty-yard line. Default is False. 
-* **fig_size (tuple)**: The size of the figure in inches. Default is (12, 6.33).
-* **save (bool)**: Whether to save the animation as a GIF. Default is False.
-* **loop (bool)**: Whether to loop the animation. Default is False.
-* ****kwargs**: Additional keyword arguments for save_params in case saving as a GIF, such as fps and bitrate.
+* **data (pd.DataFrame)**: Contains tracking data with columns including gameId, playId, frameId, x, y, and club.
+* **gameId (int)**: Identifier for the game.
+* **playId (int)**: Identifier for the play.
+* **frameId (int)**: Identifier for the specific frame within the play. 
+* **yard_numbers (bool, default True)**: Whether to display yard numbers on the field.
+* **touchdown_markings (bool, default True)**: Whether to show touchdown zone labels.
+* **fifty_yard (bool, default False)**: Highlights the 50-yard line in gold.
+* **fig_size (tuple, default (12, 6.33))**: Specifies the figure size.
+* ****kwargs**: Additional arguments
+  * **size (int, default 10)**: Marker size for players.
+  * **club_colors (dict)**: Custom mapping of club indices to colors.
 
 #### Returns:
 * **fig (matplotlib.figure.Figure)**: The figure object.
-* **ax (matplotlib.axes._subplots.AxesSubplot)**: The axis object.
+* **ax (matplotlib.axes.Axes)**: The axis object.
+
+#### Example Usage:
+```python
+fig, ax = visuals.snap(data, gameId=2022091200, playId=64, frameId=10)
+plt.show()
+```
+---
+
+## play_game()
+Animates a play by visualizing player movements over time.
+```pythonverboseregexp
+play_game(data, gameId, playId, kaggle=True, yard_numbers=True, touchdown_markings=True, fifty_yard=False, fig_size=(12, 6.33), save=False, loop=False, **kwargs)
+```
+
+#### Parameters:
+* **data (pd.DataFrame)**: Contains tracking data with columns including gameId, playId, frameId, x, y, and club.
+* **gameId (int)**: Identifier for the game.
+* **playId (int)**: Identifier for the play.
+* **kaggle (bool, default True)**: Enables compatibility with Kaggle's notebook environments.
+* **yard_numbers (bool, default True)**: Whether to display yard numbers on the field.
+* **touchdown_markings (bool, default True)**: Whether to show touchdown zone labels.
+* **fifty_yard (bool, default False)**: Highlights the 50-yard line in gold.
+* **fig_size (tuple, default (12, 6.33))**: Specifies the figure size.
+* **save (bool, default False)**: Saves the animation as a play.gif file if True.
+* **loop (bool, default False)**: Repeats the animation if True.
+* ****kwargs**: Additional arguments
+  * **size (int, default 10)**: Marker size for players.
+  * **speed (int, default 100)**: Time interval between frames (in milliseconds).
+  * **club_colors (dict)**: Custom mapping of club indices to colors.
+  * **save_params (dict)**: Parameters for saving the animation.
+
+#### Returns:
 * **ani (matplotlib.animation.FuncAnimation)**: The animation object.
 
 #### Example Usage:
 ```python
-fig, ax, ani = visuals.play_game(data, gameId=2019090800, playId=75, save=True, loop=True)
+ani = visuals.play_game(data, gameId=2022091200, playId=64)
+ani
 ```
 ---
-
-### Example of Full Usage:
+## 2. Usage Examples
+Plotting a Field
 ```python
-import pandas as pd
-from nfl import visuals
+fig, ax = visuals.field(touchdown_markings=False, fifty_yard=True)
+plt.show()
+```
 
-# Load your data into a pandas DataFrame
-data = pd.read_csv("week_1.csv")
+Visualizing a Single Frame
+```python
+fig, ax = visuals.snap(data, gameId=2022091200, playId=64, frameId=15, size=20)
+plt.show()
+```
 
-# Create a field visualization
-fig, ax = visuals.field(yard_numbers=True, touchdown_markings=True, fifty_yard=False, fig_size=(12, 6.33))
-
-# Snap a specific frame of a play
-fig, ax = visuals.snap(data, gameId=2019090800, playId=75, frameId=10, yard_numbers=True, touchdown_markings=True, fifty_yard=False, fig_size=(12, 6.33))
-
-# Animate a full play and save as GIF
-fig, ax, ani = visuals.play_game(data, gameId=2019090800, playId=75, yard_numbers=True, touchdown_markings=True, fifty_yard=False, fig_size=(12, 6.33), save=True, loop=False)
-
+Plotting a Field
+```python
+ani = visuals.play_game(data, gameId=2022091200, playId=64, save=True, speed=150)
+ani
 ```
 ---
-
-## License
+## 3. Error Handling
+* **Data Validation**: Functions check whether _gameId_, _playId_, and _frameId_ exist in the data.
+* **Color Mapping**: Ensures all _club_ values map to valid colors. Raises an error if a _club_ is unmapped.
+* **Saving Animations**: Errors in saving are explained with links to relevant Matplotlib documentation.
+---
+## 4. Customization Options
+* **Player Marker Sizes**: Control player marker sizes using the _size_ parameter.
+* **Color Mapping**: Customize player colors by passing a dictionary to _club_colors_.
+* **Animation Speed**: Adjust frame transition time with the _speed_ parameter.
+* **Output Formats**: Save animations with customized parameters for the _PillowWriter_.
+---
+## 5. License
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/shammeer-s/nfl/blob/master/LICENSE) file for details.
+
+---
+This library is ideal for visualizing football plays with clear, customizable graphics and animations. For further assistance, refer to Matplotlib's documentation or provide specific details for troubleshooting.
