@@ -24,6 +24,9 @@ setup(
         "pandas",
         "matplotlib"
     ],
+    extras_require={
+        "dev": ["pytest"],
+    },
     url='https://github.com/shammeer-s/nfl-tracks',
     author='Mohammed Shammeer',
     author_email='mohammedshammeer.s@gmail.com',
