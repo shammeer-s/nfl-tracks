@@ -8,7 +8,6 @@ from .config import NFLTracksConfig
 def plot_separation_over_time(separation_df: pd.DataFrame, target_receiver_id: int, config: NFLTracksConfig):
     """
     Generates a line plot showing a receiver's separation from the nearest defender over the play.
-    This helps in analyzing how well a receiver creates space during their route.
     """
     receiver_sep = separation_df[separation_df[config.player_id_col] == target_receiver_id]
 
@@ -50,13 +49,11 @@ def plot_play_max_speeds(speed_stats_df: pd.DataFrame):
 def plot_all_routes(play_data: pd.DataFrame, config: NFLTracksConfig):
     """
     Overlays the routes of all offensive players on a single football field diagram.
-    This provides a clear view of the route combination for a given play.
     """
     fig, ax = visuals.field()
 
     offense_df = play_data[play_data[config.player_side_col] == 'Offense']
 
-    # Use a color palette to distinguish routes
     palette = sns.color_palette('bright', n_colors=offense_df[config.player_id_col].nunique())
 
     for i, player_id in enumerate(offense_df[config.player_id_col].unique()):
@@ -64,7 +61,6 @@ def plot_all_routes(play_data: pd.DataFrame, config: NFLTracksConfig):
         ax.plot(player_route['x'], player_route['y'], color=palette[i], linestyle='-', label=player_route['player_name'].iloc[0])
 
     ax.set_title('Offensive Player Routes')
-    # Place legend outside the plot
     ax.legend(loc='upper left', bbox_to_anchor=(1, 1))
     plt.tight_layout()
     plt.show()

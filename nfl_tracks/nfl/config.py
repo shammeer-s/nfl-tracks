@@ -8,7 +8,7 @@ class NFLTracksConfig:
                  frame_col='frame_id',
                  player_id_col='nfl_id',
                  player_side_col='player_side',
-        ):
+                 ):
         """
         Initializes the configuration with specified or default column names.
         According to the NFL Big Data Bowl 2026 dataset.
