@@ -6,7 +6,7 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
     name='nfl_tracks',
-    version='1.3.0',
+    version='1.3.1',
     packages=find_packages(where="nfl_tracks"),
     package_dir={'': 'nfl_tracks'},
     classifiers=[
@@ -22,7 +22,9 @@ setup(
     long_description_content_type="text/markdown",
     install_requires=[
         "pandas",
-        "matplotlib"
+        "matplotlib",
+        "scipy",
+        "seaborn"
     ],
     extras_require={
         "dev": ["pytest"],

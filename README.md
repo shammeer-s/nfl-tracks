@@ -57,7 +57,7 @@ This is the default mode. It generates a clean and simple plot of the football f
 fig, ax = play.plot_snap(frameId=10)
 plt.show()
 ```
-![plot_snap](outputs/snap.png)
+![plot_snap](https://raw.githubusercontent.com/shammeer-s/nfl-tracks/refs/heads/master/outputs/snap.png)
 
 
 **Relay Dashboard View (`relay=True`)** <br>
@@ -68,7 +68,7 @@ This mode creates a rich, informational dashboard around the field, providing de
 fig, ax = play.plot_snap(frameId=10, relay=True)
 plt.show()
 ```
-![plot_snap](outputs/snap_relay.png)
+![plot_snap](https://raw.githubusercontent.com/shammeer-s/nfl-tracks/refs/heads/master/outputs/snap_relay.png)
 
 ### play.animate
 
@@ -83,7 +83,7 @@ This creates a simple, clean animation of the players moving on the field. It's 
 standard_animation = play.animate(kaggle=True)
 standard_animation
 ```
-![animate](outputs/animate.gif)
+![animate](https://raw.githubusercontent.com/shammeer-s/nfl-tracks/refs/heads/master/outputs/animate.gif)
 
 **Relay Dashboard Animation (`relay=True`)** <br>
 This creates a simple, clean animation of the players moving on the field. It's great for embedding in presentations or for a quick look at the play's dynamics.
@@ -93,7 +93,7 @@ This creates a simple, clean animation of the players moving on the field. It's 
 relay_animation = play.animate(relay=True, kaggle=True)
 relay_animation
 ```
-![animate](outputs/animate_relay.gif)
+![animate](https://raw.githubusercontent.com/shammeer-s/nfl-tracks/refs/heads/master/outputs/animate_relay.gif)
 
 Additional Parameters (`**kwargs`)
 You can customize your plots and animations with these optional arguments:
