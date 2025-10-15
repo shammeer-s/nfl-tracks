@@ -199,7 +199,7 @@ class Play:
             ax_team_obj.text(0.5, 0.35, "Score", ha='center', color='black', weight='bold', fontsize=10)
             ax_team_obj.text(0.1, 0.05, f"{ax_team['wp']*100:.0f}%", color='black', fontsize=10)
             ax_team_obj.add_patch(patches.Rectangle((0.8, 0.05), 0.1, 0.1, facecolor='#5e17eb', edgecolor='#ffde59'))
-            ax_team_obj.text(0.85, 0.1, ax_team['pos'], ha='center', va='center', fontsize=10, color='white')
+            ax_team_obj.text(0.85, 0.1, ax_team['pos'], ha='center', va='center', fontsize=8, color='white')
 
 
     def _draw_player_details(self, ax, player_info):
@@ -232,7 +232,7 @@ class Play:
             raise ValueError("Context data must be provided for relay view.")
 
 
-        fig = plt.figure(figsize=(22.5, 5.33), layout='tight')
+        fig = plt.figure(figsize=(22.5, 6), layout='tight')
         gs = GridSpec(1, 3, figure=fig, width_ratios=[2, 12, 2.5], wspace=0.05)
 
         ax_score = fig.add_subplot(gs[0, 0])
