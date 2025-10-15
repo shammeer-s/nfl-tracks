@@ -1,149 +1,110 @@
-# NFL Field Visualization and Animation Library
+# nfl-tracks
 
-This library provides utilities to visualize a football field, plot player positions, and animate plays. It is designed to handle data from tracking datasets, such as those used in football analytics.
+`nfl-tracks` is a Python library built on top of Matplotlib for creating insightful and customizable visualizations of NFL player tracking data. Designed with the NFL Big Data Bowl in mind, it provides a simple interface to plot static plays, generate dynamic animations, and view detailed, context-rich breakdowns of individual plays.
 
-Installing the library:
+## Key Features
+* Standard Field Visualization: Generate a regulation NFL field with customizable markings.
+* Single Frame Plotting: Visualize player positions at any specific moment in a play.
+* Dynamic Animations: Create smooth, animated GIFs or videos of entire plays.
+* "Relay" Dashboard View: A comprehensive visualization that includes:
+  * Live scoreboard with team details and win probabilities.
+  * Highlighted player card with key stats (name, position, height, etc.).
+  * On-field play and game context.
+  * Automatic highlighting of the targeted or predicted player.
+* Kaggle Notebook Compatibility: Easily render animations directly within Kaggle notebooks.
+* Out-of-Bounds Tracking: Players and the ball are visualized even when they go outside the field of play, without distorting the field's proportions.
 
+## Installation
+You can install nfl-tracks using pip:
 ```bash
 pip install nfl_tracks
 ```
 
-After successfully installing the nfl_tracks package, import it in the file using the code below:
+## Function Overview
+The core of the library is the visuals.Play class, which you initialize once for a specific play. You can then call its methods to generate different visualizations.
+
+Initialization of a visualization object for a specific play. This is the first step before you can plot or animate anything.
+
+* data (pd.DataFrame): The main tracking data.
+* gameId (int): The unique identifier for the game.
+* playId (int): The identifier for the play.
+* context_data (pd.DataFrame): The supplementary data containing game and play context.
+
 ```python
-# Import nfl_tracks
+# Data Preparation
+import pandas as pd
 from nfl import visuals
-```
-## Table of Contents
-1. Function Overview
-   * field()
-   * snap()
-   * play_game()
-2. Usage Examples 
-3. Error Handling 
-4. Customization Options
----
-## 1. Function Overview
-## field()
-Generates a plot of a football field with customizable features.
 
-```pythonverboseregexp
-field(yard_numbers=True, touchdown_markings=True, fifty_yard=False, fig_size=(12, 6.33))
+tracking_data = pd.read_csv(f'data/train/input_2023_w02.csv')
+context_data = pd.read_csv(f'data/supplementary_data.csv', dtype={25: str})
+
+data = tracking_data[(tracking_data['game_id'] == 2023091400) & (tracking_data['play_id'] == 3438)]
 ```
 
-#### Parameters:
-* **yard_numbers (bool, default True)**: Whether to display yard numbers on the field.
-* **touchdown_markings (bool, default True)**: Whether to show touchdown zone labels.
-* **fifty_yard (bool, default False)**: Highlights the 50-yard line in gold.
-* **fig_size (tuple, default (12, 6.33))**: Specifies the figure size.
-
-#### Returns:
-* **fig (matplotlib.figure.Figure)**: The figure object.
-* **ax (matplotlib.axes.Axes)**: The axes object containing the plot.
-
-#### Example Usage:
 ```python
-fig, ax = visuals.field()
+play = visuals.Play(data, gameId, playId, context_data)
+```
+
+### plot_snap
+
+This is useful for analyzing player formations and positions at a key moment, like the snap or the moment a pass is thrown.
+
+**Standard View (`relay=False`)** <br>
+This is the default mode. It generates a clean and simple plot of the football field with the players' positions.
+
+```python
+# Plots frame 10 of the play on a standard field
+fig, ax = play.plot_snap(frameId=10)
 plt.show()
 ```
-![field.png](https://raw.githubusercontent.com/shammeer-s/nfl-tracks/e0d4dcada2bab940d84978964a52b3f5a06ed60b/outputs/field.png "Field")
----
+![plot_snap](outputs/snap.png)
 
-## snap()
-Plots the positions of players during a specific frame of a play.
 
-```pythonverboseregexp
-snap(data, gameId, playId, frameId, yard_numbers=True, touchdown_markings=True, fifty_yard=False, fig_size=(12, 6.33), **kwargs)
-```
+**Relay Dashboard View (`relay=True`)** <br>
+This mode creates a rich, informational dashboard around the field, providing deep context for the play. It includes a scoreboard, game information, and a detailed card for a highlighted player.
 
-#### Parameters:
-* **data (pd.DataFrame)**: Contains tracking data with columns including gameId, playId, frameId, x, y, and club.
-* **gameId (int)**: Identifier for the game.
-* **playId (int)**: Identifier for the play.
-* **frameId (int)**: Identifier for the specific frame within the play. 
-* **yard_numbers (bool, default True)**: Whether to display yard numbers on the field.
-* **touchdown_markings (bool, default True)**: Whether to show touchdown zone labels.
-* **fifty_yard (bool, default False)**: Highlights the 50-yard line in gold.
-* **fig_size (tuple, default (12, 6.33))**: Specifies the figure size.
-* ****kwargs**: Additional arguments
-  * **size (int, default 10)**: Marker size for players.
-  * **club_colors (dict)**: Custom mapping of club indices to colors.
-
-#### Returns:
-* **fig (matplotlib.figure.Figure)**: The figure object.
-* **ax (matplotlib.axes.Axes)**: The axis object.
-
-#### Example Usage:
 ```python
-fig, ax = visuals.snap(data, gameId=2022091200, playId=64, frameId=10)
+# Plots frame 10 using the advanced relay dashboard
+fig, ax = play.plot_snap(frameId=10, relay=True)
 plt.show()
 ```
-![snap.png](https://raw.githubusercontent.com/shammeer-s/nfl-tracks/refs/heads/master/outputs/snap.png "snap")
----
+![plot_snap](outputs/snap_relay.png)
 
-## play_game()
-Animates a play by visualizing player movements over time.
-```pythonverboseregexp
-play_game(data, gameId, playId, kaggle=True, yard_numbers=True, touchdown_markings=True, fifty_yard=False, fig_size=(12, 6.33), save=False, loop=False, **kwargs)
-```
+### play.animate
 
-#### Parameters:
-* **data (pd.DataFrame)**: Contains tracking data with columns including gameId, playId, frameId, x, y, and club.
-* **gameId (int)**: Identifier for the game.
-* **playId (int)**: Identifier for the play.
-* **kaggle (bool, default True)**: Enables compatibility with Kaggle's notebook environments.
-* **yard_numbers (bool, default True)**: Whether to display yard numbers on the field.
-* **touchdown_markings (bool, default True)**: Whether to show touchdown zone labels.
-* **fifty_yard (bool, default False)**: Highlights the 50-yard line in gold.
-* **fig_size (tuple, default (12, 6.33))**: Specifies the figure size.
-* **save (bool, default False)**: Saves the animation as a play.gif file if True.
-* **loop (bool, default False)**: Repeats the animation if True.
-* ****kwargs**: Additional arguments
-  * **size (int, default 10)**: Marker size for players.
-  * **speed (int, default 100)**: Time interval between frames (in milliseconds).
-  * **club_colors (dict)**: Custom mapping of club indices to colors.
-  * **save_params (dict)**: Parameters for saving the animation.
+Generates a full animation of the play from the first frame to the last. This is the best way to see a play unfold, showing player routes and movements in real-time.
 
-#### Returns:
-* **ani (matplotlib.animation.FuncAnimation)**: The animation object.
+**Standard Animation (`relay=False`)** <br>
+This creates a simple, clean animation of the players moving on the field. It's great for embedding in presentations or for a quick look at the play's dynamics.
 
-#### Example Usage:
 ```python
-ani = visuals.play_game(data, gameId=2022091200, playId=64)
-ani
+# Generates a standard animation of the play
+# Use kaggle=True to display it in a notebook
+standard_animation = play.animate(kaggle=True)
+standard_animation
 ```
-![play.gif](https://raw.githubusercontent.com/shammeer-s/nfl-tracks/refs/heads/master/outputs/play.gif "play_game")
----
-## 2. Usage Examples
-Plotting a Field
-```python
-fig, ax = visuals.field(touchdown_markings=False, fifty_yard=True)
-plt.show()
-```
+![animate](outputs/animate.gif)
 
-Visualizing a Single Frame
-```python
-fig, ax = visuals.snap(data, gameId=2022091200, playId=52, frameId=15, size=20)
-plt.show()
-```
+**Relay Dashboard Animation (`relay=True`)** <br>
+This creates a simple, clean animation of the players moving on the field. It's great for embedding in presentations or for a quick look at the play's dynamics.
 
-Plotting a Field
 ```python
-ani = visuals.play_game(data, gameId=2022091200, playId=24, save=True, speed=150)
-ani
+# Generates a relay dashboard animation of the play
+relay_animation = play.animate(relay=True, kaggle=True)
+relay_animation
 ```
----
-## 3. Error Handling
-* **Data Validation**: Functions check whether _gameId_, _playId_, and _frameId_ exist in the data.
-* **Color Mapping**: Ensures all _club_ values map to valid colors. Raises an error if a _club_ is unmapped.
-* **Saving Animations**: Errors in saving are explained with links to relevant Matplotlib documentation.
----
-## 4. Customization Options
-* **Player Marker Sizes**: Control player marker sizes using the _size_ parameter.
-* **Color Mapping**: Customize player colors by passing a dictionary to _club_colors_.
-* **Animation Speed**: Adjust frame transition time with the _speed_ parameter.
-* **Output Formats**: Save animations with customized parameters for the _PillowWriter_.
----
-## 5. License
+![animate](outputs/animate_relay.gif)
+
+Additional Parameters (`**kwargs`)
+You can customize your plots and animations with these optional arguments:
+
+* `highlight_player_id` (int): Manually specify an `nfl_id` to highlight in the relay view. If not provided, it defaults to the player with `player_to_predict=True`.
+* `club_colors` (dict): A dictionary to override default offense/defense colors (e.g., `{'Offense': '#006400', 'Defense': '#8B0000'}`).
+* `size` (int): The marker size for players on the field.
+* `speed` (int): The delay between frames in milliseconds for animations (a lower number is faster).
+
+
+## License
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/shammeer-s/nfl/blob/master/LICENSE) file for details.
 
 ---

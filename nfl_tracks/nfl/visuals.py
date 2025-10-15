@@ -3,22 +3,15 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import matplotlib.patches as patches
 import matplotlib.image as mimage
-import matplotlib.font_manager as fm
-from io import BytesIO
-from PIL import Image
 from matplotlib.offsetbox import AnnotationBbox, OffsetImage
 from matplotlib.gridspec import GridSpec, GridSpecFromSubplotSpec
 import inspect
 import urllib.request
 from datetime import datetime
+from io import BytesIO
+from IPython.display import HTML
 
 from .config import NFLTracksConfig
-
-font_path = '/path/to/your/font/MyCustomFont.ttf'
-
-plt.rcParams["font.family"] = "sans-serif"
-plt.rcParams['font.sans-serif'] = ['Tahoma', 'DejaVu Sans',
-                               'Lucida Grande', 'Verdana']
 
 def _draw_field_on_axes(ax, yard_numbers=True, touchdown_markings=True, fifty_yard=False):
     """Helper to draw a football field on a given matplotlib Axes object."""
@@ -50,6 +43,7 @@ def _draw_field_on_axes(ax, yard_numbers=True, touchdown_markings=True, fifty_ya
         if x % 5 != 0:
             ax.plot([x, x], [22.91, 23.57], color='white', alpha=0.5, lw=1)
             ax.plot([x, x], [29.73, 30.39], color='white', alpha=0.5, lw=1)
+
 
 def field(yard_numbers=True, touchdown_markings=True, fifty_yard=False, fig_size=(12, 6.33)):
     """Generates a plot of a standard American football field."""
@@ -98,7 +92,6 @@ class Play:
         try:
             if self.ball_image_path.startswith('http'):
                 with urllib.request.urlopen(self.ball_image_path) as req:
-                    # Read the image data into an in-memory buffer
                     img_data = req.read()
                     img_stream = BytesIO(img_data)
                     img = mimage.imread(img_stream)
@@ -108,7 +101,6 @@ class Play:
             imagebox = OffsetImage(img, zoom=0.05)
             ab = AnnotationBbox(imagebox, (ball_x, ball_y), frameon=False, zorder=5, annotation_clip=False)
             ax.add_artist(ab)
-            # ab.set_clip_on(False)
         except Exception as e:
             print(f"Failed to load ball image: {e}")
             ax.scatter(ball_x, ball_y, c='saddlebrown', s=50, marker='o', zorder=5, clip_on=False)
@@ -130,26 +122,20 @@ class Play:
         field_ax.text(0, 55.3, f"{self.gameId}    {self.playId}", fontsize=12, color='black')
         field_ax.text(120, 55.3, f"{season} - Week {week}     {game_date}    {game_time_str}", fontsize=12, color='black', ha='right')
 
-        # Axes-level Footer
         play_desc = context_info.get('play_description', 'N/A')
         field_ax.text(60, -3, play_desc, ha='center', fontsize=12, style='italic', color='black',
                       bbox=dict(facecolor='white', alpha=0.5), zorder=6)
 
 
     def _draw_scoreboard(self, ax, context):
-        """
-        Draws the scoreboard with two separate subplots for possession and defense teams.
-        """
-        # Get the figure from the axes and turn off the main subplot's axis lines
+        ax.set_ylim(0, 1)
         fig = ax.get_figure()
         ax.axis('off')
 
-        # Create a nested GridSpec to divide the provided subplot into two rows
         gs = GridSpecFromSubplotSpec(2, 1, subplot_spec=ax.get_subplotspec(), hspace=0.1)
         ax_off = fig.add_subplot(gs[0])
         ax_def = fig.add_subplot(gs[1])
 
-        # --- Data Preparation ---
         poss_team = context['possession_team']
         def_team = context['defensive_team']
 
@@ -165,27 +151,10 @@ class Play:
             def_wp = context['pre_snap_home_team_win_probability']
 
         ax_team_board = {
-            "ax_off": {
-                "obj": ax_off,
-                "team": poss_team,
-                "score": off_score,
-                "wp": off_wp,
-                "bg_color": '#ffadad',
-                "border_color": 'red',
-                "pos": "O"
-            },
-            "ax_def": {
-                "obj": ax_def,
-                "team": def_team,
-                "score": def_score,
-                "wp": def_wp,
-                "bg_color": '#a1dbe3',
-                "border_color": 'blue',
-                "pos": "D"
-            }
+            "ax_off": { "obj": ax_off, "team": poss_team, "score": off_score, "wp": off_wp, "bg_color": '#ffadad', "border_color": 'red', "pos": "O" },
+            "ax_def": { "obj": ax_def, "team": def_team, "score": def_score, "wp": def_wp, "bg_color": '#a1dbe3', "border_color": 'blue', "pos": "D" }
         }
 
-        # --- Possession Team Box (Top Subplot) ---
         for team in ax_team_board:
             ax_team = ax_team_board[team]
             ax_team_obj = ax_team['obj']
@@ -232,7 +201,8 @@ class Play:
             raise ValueError("Context data must be provided for relay view.")
 
 
-        fig = plt.figure(figsize=(22.5, 6), layout='tight')
+        fig = plt.figure(figsize=(18, 6.33))
+        fig.subplots_adjust(left=0.05, right=0.95)
         gs = GridSpec(1, 3, figure=fig, width_ratios=[2, 12, 2.5], wspace=0.05)
 
         ax_score = fig.add_subplot(gs[0, 0])
@@ -259,6 +229,7 @@ class Play:
         if not relay:
             field_kwargs, snap_kwargs = self._split_kwargs(kwargs)
             fig, ax = field(**field_kwargs)
+
             player_data = self._get_colorized_frame_data(frameId, snap_kwargs.get('club_colors'))
             ax.scatter(player_data.x, player_data.y, c=player_data['plot_color'], s=snap_kwargs.get('size', 30), clip_on=False)
             self._draw_ball_image(ax)
@@ -267,6 +238,7 @@ class Play:
             field_kwargs, snap_kwargs = self._split_kwargs(kwargs)
 
             _draw_field_on_axes(ax_field, **field_kwargs)
+
             player_data = self._get_colorized_frame_data(frameId, snap_kwargs.get('club_colors'))
             ax_field.scatter(player_data.x, player_data.y, c=player_data['plot_color'], s=snap_kwargs.get('size', 30), clip_on=False)
 
@@ -276,16 +248,16 @@ class Play:
                     ax_field.scatter(p_info.x, p_info.y, s=100, facecolors='none', edgecolors='yellow', lw=1.5, clip_on=False)
 
             self._draw_ball_image(ax_field)
-            ax = ax_field # for return consistency
+            ax = ax_field
 
         if save:
             fname = filename or f"{self.gameId}_{self.playId}_frame_{frameId}.png"
-            fig.savefig(fname, dpi=kwargs.get('dpi', 150), bbox_inches='tight')
+            fig.savefig(fname, dpi=kwargs.get('dpi', 150))
             print(f"Snap saved to {fname}")
 
         return fig, ax
 
-    def animate(self, save: bool = False, filename: str = None, relay: bool = False, highlight_player_id: int = None, **kwargs):
+    def animate(self, save: bool = False, filename: str = None, relay: bool = False, highlight_player_id: int = None, kaggle=True, **kwargs):
         field_kwargs, animate_kwargs = self._split_kwargs(kwargs)
 
         if not relay:
@@ -300,8 +272,8 @@ class Play:
         frames = sorted(self.data[self.config.frame_col].unique())
         marker_size = animate_kwargs.get('size', 30)
 
-        player_scatter = ax.scatter([], [], s=marker_size, zorder=3, clip_on=False)
-        highlight_marker = ax.scatter([], [], s=100, facecolors='none', edgecolors='yellow', lw=1.5, zorder=4, clip_on=False)
+        player_scatter = ax.scatter([], [], s=100, zorder=3, clip_on=False)
+        highlight_marker = ax.scatter([], [], s=100, facecolors='none', edgecolors='yellow', lw=2.5, zorder=4, clip_on=False)
 
         def update(frame_idx):
             frame_id = frames[frame_idx]
@@ -326,6 +298,10 @@ class Play:
             writer = animation.PillowWriter(fps=animate_kwargs.get('fps', 15))
             ani.save(fname, writer=writer)
             print(f"Animation saved to {fname}")
+
+        if kaggle:
+            plt.close(fig)
+            return HTML(ani.to_jshtml())
 
         return ani
 
